@@ -1,0 +1,22 @@
+sequenceDiagram
+  actor Customer
+  participant Menu as MenuScreen
+  participant Cart as CartContext / cartReducer
+  participant Summary as OrderSummaryScreen
+  participant Orders as OrdersContext / AsyncStorage
+  participant Tracking as OrderTrackingScreen
+  Customer->>Menu: Tap Add to cart
+  Menu->>Cart: dispatch(ADD_ITEM, item)
+  Cart-->>Menu: updated item count / badge
+  Customer->>Menu: Open Cart and Review order
+  Menu->>Summary: Navigate with service mode
+  Summary->>Cart: Read items and promo
+  Summary->>Summary: useMemo fee/tax/total calculation
+  Customer->>Summary: Tap Place order
+  Summary->>Orders: dispatch(CREATE, order)
+  Orders->>Orders: Persist orders in AsyncStorage
+  Summary->>Cart: dispatch(CLEAR_CART)
+  Summary->>Tracking: Navigate(orderId)
+  Tracking->>Orders: Read order and observe status
+  Orders-->>Tracking: Pending order snapshot
+  Tracking-->>Customer: Progress and elapsed-time display

@@ -1,0 +1,50 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+skinparam shadowing false
+package "React Navigation / Screens" {
+  [Login / Signup] as Login
+  [Menu] as Menu
+  [Cart] as CartScreen
+  [Order Summary] as Summary
+  [Order Tracking] as Tracking
+  [Reservation] as Reserve
+  [Profile] as Profile
+  [Manager Dashboard] as Manager
+}
+package "Context Providers" {
+  [AuthContext] as Auth
+  [ThemeContext] as Theme
+  [CartContext] as CartCtx
+  [MenuContext] as MenuCtx
+  [OrdersContext] as Orders
+  [ReservationProvider] as Reservations
+}
+package "Reducers and Hooks" {
+  [cartReducer] as CartReducer
+  [ordersReducer] as OrdersReducer
+  [useForm] as Form
+  [useDebounce] as Debounce
+  [useReservation] as ReservationHook
+}
+Login --> Auth
+Login --> Form
+Menu --> Theme
+Menu --> MenuCtx
+Menu --> CartCtx
+Menu --> Debounce
+CartScreen --> CartCtx
+CartCtx --> CartReducer
+Summary --> CartCtx
+Summary --> Orders
+Orders --> OrdersReducer
+Tracking --> Orders
+Reserve --> Reservations
+Reserve --> ReservationHook
+ReservationHook --> Reservations
+Manager --> Orders
+Manager --> Reservations
+Manager --> MenuCtx
+Profile --> Auth
+Profile --> Theme
+@enduml

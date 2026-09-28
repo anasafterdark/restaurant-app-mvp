@@ -1,0 +1,6 @@
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
+import { Screen, Title, Body, Surface } from '../components/ui';
+import { useOrders } from '../context/OrdersContext';
+import { useTheme } from '../context/ThemeContext';
+export default function OrdersScreen({ navigation }) { const {orders}=useOrders();const {colors}=useTheme();return <Screen scroll><Title>Your orders</Title><Body style={{ marginTop:5,marginBottom:14 }}>Recent orders stay saved on this device.</Body>{!orders.length?<Surface><Body>No orders yet. Your next favourite is one tap away.</Body></Surface>:orders.map((order)=><Pressable key={order.id} onPress={()=>navigation.getParent()?.navigate('OrderTracking',{orderId:order.id})}><Surface style={{ marginBottom:11 }}><View style={{ flexDirection:'row',justifyContent:'space-between' }}><Text style={{ color:colors.text,fontWeight:'900' }}>#{order.id.slice(-6).toUpperCase()}</Text><Text style={{ color:colors.primary,fontWeight:'900' }}>{order.status}</Text></View><Body style={{ marginTop:6 }}>{new Date(order.createdAt).toLocaleString()} · {order.type}</Body><Text style={{ color:colors.text,fontWeight:'800',marginTop:10 }}>Rs {order.total} · {order.items.length} dishes</Text></Surface></Pressable>)}</Screen>; }

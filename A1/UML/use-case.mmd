@@ -1,0 +1,41 @@
+flowchart LR
+  C[Customer]
+  M[Restaurant Manager]
+  subgraph APP[Table & Thyme Restaurant App]
+    U1((Sign up / Sign in))
+    U2((Browse Menu))
+    U3((Search, Filter and Sort))
+    U4((View Daily Specials))
+    U5((Favourite Dish))
+    U6((Add to Cart))
+    U7((Apply Promo Code))
+    U8((Review Order Summary))
+    U9((Place Order))
+    U10((Track Order))
+    U11((Request Reservation))
+    U12((Check Table Availability))
+    U13((Cancel Reservation))
+    U14((View Profile / Change Theme))
+    U15((Manage Incoming Orders))
+    U16((Accept or Decline Reservation))
+    U17((Manage Menu and Availability))
+  end
+  C --> U1
+  C --> U2
+  C --> U3
+  C --> U4
+  C --> U5
+  C --> U6
+  C --> U9
+  C --> U10
+  C --> U11
+  C --> U13
+  C --> U14
+  M --> U1
+  M --> U15
+  M --> U16
+  M --> U17
+  U9 -. "<<include>>" .-> U8
+  U9 -. "<<include>>" .-> U6
+  U7 -. "<<extend>> optional" .-> U8
+  U11 -. "<<include>>" .-> U12

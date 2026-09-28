@@ -1,0 +1,61 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam linetype ortho
+actor Customer
+actor "Restaurant Manager" as Manager
+rectangle "Table & Thyme Restaurant App" {
+  usecase "Sign up / Sign in" as Auth
+  usecase "Browse Menu" as Browse
+  usecase "Search, Filter & Sort" as Search
+  usecase "View Daily Specials" as Specials
+  usecase "Favourite Dish" as Fav
+  usecase "Add to Cart" as Add
+  usecase "Review Order Summary" as Summary
+  usecase "Apply Promo Code" as Promo
+  usecase "Place Order" as Place
+  usecase "Track Order" as Track
+  usecase "Request Reservation" as Reserve
+  usecase "Check Table Availability" as Availability
+  usecase "Cancel Reservation" as Cancel
+  usecase "View Profile / Change Theme" as Profile
+  usecase "Manage Incoming Orders" as ManageOrders
+  usecase "Accept / Decline Reservation" as ManageReservations
+  usecase "Manage Menu / Availability" as ManageMenu
+  Browse -[hidden]right- Search
+  Search -[hidden]right- Specials
+  Specials -[hidden]right- Fav
+  Add -[hidden]right- Summary
+  Summary -[hidden]right- Promo
+  Promo -[hidden]right- Place
+  Track -[hidden]right- Reserve
+  Reserve -[hidden]right- Availability
+  Availability -[hidden]right- Cancel
+  Profile -[hidden]right- ManageOrders
+  ManageOrders -[hidden]right- ManageReservations
+  ManageReservations -[hidden]right- ManageMenu
+  Browse -[hidden]down- Add
+  Add -[hidden]down- Track
+  Track -[hidden]down- Profile
+}
+Customer --> Auth
+Customer --> Browse
+Customer --> Search
+Customer --> Specials
+Customer --> Fav
+Customer --> Add
+Customer --> Place
+Customer --> Track
+Customer --> Reserve
+Customer --> Cancel
+Customer --> Profile
+Manager --> Auth
+Manager --> ManageOrders
+Manager --> ManageReservations
+Manager --> ManageMenu
+Place .> Summary : <<include>>
+Place .> Add : <<include>>
+Promo .> Summary : <<extend>>
+Reserve .> Availability : <<include>>
+@enduml

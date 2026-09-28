@@ -1,0 +1,15 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Text, View } from 'react-native';
+import { Screen, Title, Body, Surface, Button } from '../components/ui';
+import { useOrders } from '../context/OrdersContext';
+import { useTheme } from '../context/ThemeContext';
+const STEPS=['Pending','Preparing','Ready','Served'];
+const RANK={Pending:0,Preparing:1,Ready:2,Served:3,Cancelled:-1};
+export default function OrderTrackingScreen({ route, navigation }) {
+ const {orders,dispatch}=useOrders();const {colors}=useTheme();const order=orders.find((x)=>x.id===route.params?.orderId)||orders[0];const [elapsed,setElapsed]=useState(0);const applied=useRef(0);
+ if(order&&RANK[order.status]>applied.current)applied.current=RANK[order.status];
+ useEffect(()=>{if(!order)return;const tick=setInterval(()=>{const seconds=Math.floor((Date.now()-new Date(order.createdAt).getTime())/1000);setElapsed(Math.max(0,seconds));if(order.status==='Cancelled')return;let next=null;if(seconds>=30&&applied.current<3)next='Served';else if(seconds>=20&&applied.current<2)next='Ready';else if(seconds>=10&&applied.current<1)next='Preparing';if(next){applied.current=RANK[next];dispatch({type:'STATUS',id:order.id,status:next});}},1000);return()=>clearInterval(tick);},[order?.id,order?.createdAt,order?.status,dispatch]);
+ const index=useMemo(()=>STEPS.indexOf(order?.status),[order?.status]);
+ if(!order)return <Screen scroll><Title>No active order</Title><Body style={{ marginTop:6 }}>Place an order to track its progress.</Body><Button title="Go to menu" onPress={()=>navigation.navigate('Tabs',{screen:'Menu'})} style={{ marginTop:16 }}/></Screen>;
+ return <Screen scroll><Text style={{ color:colors.primary,fontWeight:'900',fontSize:11,letterSpacing:1.2 }}>ORDER TRACKING</Text><Title style={{ marginTop:6 }}>#{order.id.slice(-6).toUpperCase()}</Title><Body style={{ marginTop:5 }}>Elapsed time: {Math.floor(elapsed/60)}:{String(elapsed%60).padStart(2,'0')}</Body><Surface style={{ marginTop:18 }}><Title size={20}>Your order is {order.status.toLowerCase()}</Title><Body style={{ marginTop:5 }}>{order.type} · Rs {order.total}{order.tableOrTime?` · ${order.tableOrTime}`:''}</Body>{STEPS.map((step,i)=><View key={step} style={{ flexDirection:'row',alignItems:'center',gap:12,marginTop:18 }}><View style={{ width:28,height:28,borderRadius:14,alignItems:'center',justifyContent:'center',backgroundColor:i<=index?colors.primarySoft:colors.chip }}><Text style={{ color:i<=index?colors.primary:colors.muted,fontWeight:'900' }}>{i<index?'✓':i+1}</Text></View><View><Text style={{ color:i<=index?colors.text:colors.muted,fontWeight:'800' }}>{step}</Text><Body>{['We received your order','Kitchen is preparing it','Ready for pickup / service','Enjoy your meal'][i]}</Body></View></View>)}</Surface><Title size={18} style={{ marginTop:22 }}>Items</Title>{order.items.map((item)=><Body key={item.id} style={{ marginTop:8 }}>{item.quantity} × {item.name}{item.note?` · ${item.note}`:''}</Body>)}<Button title="View all orders" secondary onPress={()=>navigation.navigate('Tabs',{screen:'Orders'})} style={{ marginTop:22 }}/></Screen>;
+}

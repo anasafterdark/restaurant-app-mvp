@@ -1,0 +1,50 @@
+flowchart TB
+  subgraph NAV[React Navigation]
+    Login[Login / Signup]
+    Tabs[Role-aware Bottom Tabs]
+    Menu[Menu Screen]
+    CartScreen[Cart Screen]
+    Reserve[Reservation Screen]
+    Summary[Order Summary]
+    Track[Order Tracking]
+    Manager[Manager Dashboard]
+    Profile[Profile / Theme]
+  end
+  subgraph STATE[Shared Context Providers]
+    Auth[AuthContext]
+    Theme[ThemeContext]
+    Cart[CartContext]
+    MenuCtx[MenuContext]
+    Orders[OrdersContext]
+    Reservations[ReservationProvider]
+  end
+  subgraph LOGIC[Reducers and Custom Hooks]
+    CartReducer[cartReducer]
+    OrdersReducer[ordersReducer]
+    Form[useForm]
+    Debounce[useDebounce]
+    ReservationHook[useReservation]
+  end
+  Login --> Auth
+  Login --> Form
+  Tabs --> Auth
+  Tabs --> Theme
+  Menu --> Theme
+  Menu --> MenuCtx
+  Menu --> Cart
+  Menu --> Debounce
+  CartScreen --> Cart
+  Cart --> CartReducer
+  Summary --> Cart
+  Summary --> Orders
+  Orders --> OrdersReducer
+  Track --> Orders
+  Reserve --> Reservations
+  Reserve --> ReservationHook
+  ReservationHook --> Reservations
+  Manager --> Orders
+  Manager --> Reservations
+  Manager --> MenuCtx
+  Profile --> Auth
+  Profile --> Theme
+  MenuCtx --> Menu

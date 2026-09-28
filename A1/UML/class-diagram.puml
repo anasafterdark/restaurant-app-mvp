@@ -1,0 +1,83 @@
+@startuml
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+class User {
+  +String id
+  +String name
+  +String email
+  +String role
+  +login(email, password)
+  +logout()
+}
+class Customer {
+  +String phone
+  +viewMenu()
+  +placeOrder()
+  +requestReservation()
+}
+class Manager {
+  +updateOrderStatus(orderId, status)
+  +manageMenuItem(itemId)
+  +reviewReservation(id, status)
+}
+class Category {
+  +String id
+  +String name
+}
+class MenuItem {
+  +String id
+  +String name
+  +String description
+  +Number price
+  +Boolean isAvailable
+  +Boolean isSpecial
+  +toggleAvailability()
+}
+class Cart {
+  +String promoCode
+  +Number discountPercent
+  +addItem(item)
+  +removeItem(itemId)
+  +calculateSubtotal()
+}
+class CartItem {
+  +Number quantity
+  +String note
+  +increment()
+  +decrement()
+}
+class Order {
+  +String id
+  +Number total
+  +String type
+  +String status
+  +Date createdAt
+  +advanceStatus()
+}
+class Reservation {
+  +String id
+  +Date date
+  +String time
+  +Number partySize
+  +String status
+  +cancel()
+}
+class Table {
+  +String id
+  +Number seats
+  +String label
+  +isAvailable(date, time)
+}
+User <|-- Customer
+User <|-- Manager
+Category "1" o-- "0..*" MenuItem : groups
+Customer "1" --> "1" Cart : owns
+Cart "1" *-- "0..*" CartItem : contains
+CartItem "0..*" --> "1" MenuItem : selects
+Customer "1" --> "0..*" Order : places
+Order "1" *-- "1..*" CartItem : snapshots
+Customer "1" --> "0..*" Reservation : requests
+Reservation "0..*" --> "1" Table : reserves
+Manager "1" --> "0..*" Order : manages
+@enduml

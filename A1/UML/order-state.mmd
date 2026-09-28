@@ -1,0 +1,10 @@
+stateDiagram-v2
+  [*] --> Pending: customer places order
+  Pending --> Preparing: demo timer 10s / manager starts
+  Preparing --> Ready: demo timer 20s / manager marks ready
+  Ready --> Served: demo timer 30s / manager marks served
+  Pending --> Cancelled: manager cancels
+  Preparing --> Cancelled: manager cancels
+  Ready --> Cancelled: manager cancels
+  Served --> [*]
+  Cancelled --> [*]

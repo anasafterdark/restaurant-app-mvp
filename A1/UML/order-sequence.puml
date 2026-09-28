@@ -1,0 +1,23 @@
+@startuml
+actor Customer
+participant MenuScreen as Menu
+participant "CartContext / Reducer" as Cart
+participant OrderSummaryScreen as Summary
+participant "OrdersContext / AsyncStorage" as Orders
+participant OrderTrackingScreen as Tracking
+Customer -> Menu : Tap Add to Cart
+Menu -> Cart : dispatch(ADD_ITEM, item)
+Cart --> Menu : updated cart count / badge
+Customer -> Menu : Open cart and review
+Menu -> Summary : Navigate with service mode
+Summary -> Cart : Read items and promo
+Summary -> Summary : useMemo: compute total
+Customer -> Summary : Tap Place Order
+Summary -> Orders : dispatch(CREATE, order)
+Orders -> Orders : Persist in AsyncStorage
+Summary -> Cart : dispatch(CLEAR_CART)
+Summary -> Tracking : Navigate(orderId)
+Tracking -> Orders : Read order status
+Orders --> Tracking : Pending order snapshot
+Tracking --> Customer : Show progress and elapsed time
+@enduml

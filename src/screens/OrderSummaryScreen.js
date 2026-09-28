@@ -1,0 +1,13 @@
+import React, { useMemo } from 'react';
+import { Text, View } from 'react-native';
+import { Screen, Title, Body, Surface, Button, Divider } from '../components/ui';
+import { useCart } from '../context/CartContext';
+import { useOrders } from '../context/OrdersContext';
+import { useTheme } from '../context/ThemeContext';
+export const SERVICE_RATE=0.05; export const TAX_RATE=0.15;
+export default function OrderSummaryScreen({ navigation, route }) {
+  const { colors }=useTheme(); const { state, dispatch:cartDispatch }=useCart(); const {dispatch:ordersDispatch}=useOrders(); const orderType=route.params?.orderType||'Takeaway'; const tableOrTime=route.params?.tableOrTime||'Pickup in 25 minutes';
+  const totals=useMemo(()=>{const subtotal=state.items.reduce((s,x)=>s+x.price*x.quantity,0);const serviceCharge=subtotal*SERVICE_RATE;const salesTax=subtotal*TAX_RATE;const discount=subtotal*(state.discountPercent/100);return {subtotal,serviceCharge,salesTax,discount,total:subtotal+serviceCharge+salesTax-discount};},[state.items,state.discountPercent]);
+  const money=(n)=>`Rs ${Math.round(n).toLocaleString()}`;
+  return <Screen scroll><Title>Order summary</Title><Body style={{ marginTop:5 }}>Review your order before placing it.</Body><Surface style={{ marginTop:18 }}><Text style={{ color:colors.text,fontWeight:'800',fontSize:16 }}>{orderType} · {tableOrTime}</Text>{state.items.map((item)=><View key={item.id} style={{ flexDirection:'row',justifyContent:'space-between',marginTop:13 }}><Body>{item.quantity} × {item.name}</Body><Text style={{ color:colors.text,fontWeight:'700' }}>{money(item.price*item.quantity)}</Text></View>)}<Divider/>{[['Subtotal',totals.subtotal],['Service charge (5%)',totals.serviceCharge],['Sales tax (15%)',totals.salesTax],...(totals.discount?[[`Promo · ${state.promoCode}`,-totals.discount]]:[])].map(([label,value])=><View key={label} style={{ flexDirection:'row',justifyContent:'space-between',marginBottom:9 }}><Body>{label}</Body><Text style={{ color:colors.text }}>{value<0?'−':''}{money(Math.abs(value))}</Text></View>)}<Divider/><View style={{ flexDirection:'row',justifyContent:'space-between' }}><Title size={18}>Total</Title><Title size={18}>{money(totals.total)}</Title></View></Surface><Button title="Place order" onPress={()=>{const order={id:`o-${Date.now()}`,items:state.items,total:Math.round(totals.total),type:orderType,tableOrTime,status:'Pending',createdAt:new Date().toISOString()};ordersDispatch({type:'CREATE',order});cartDispatch({type:'CLEAR_CART'});navigation.replace('OrderTracking',{orderId:order.id});}} style={{ marginTop:18 }}/></Screen>;
+}
